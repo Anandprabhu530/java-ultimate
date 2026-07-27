@@ -6,24 +6,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.stereotype.Component;
 import tools.jackson.databind.ser.jdk.StringSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
-@Configuration
+@Component
 public class KafkaProducer {
 
-    @Bean
-    public ProducerFactory<String, String> producerFactory(){
-        Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        return new DefaultKafkaProducerFactory<>(props);
+    private static final String INGESTION_TOPIC = "gps-ingestion";
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate){
+        this.kafkaTemplate = kafkaTemplate;
     }
 
-    @Bean
-    public KafkaTemplate<String, String> kafkaTemplate(){
-        return new KafkaTemplate<>(producerFactory());
+    public void publishMessage(UUID vehicleId, String jsonMessage){
+        kafkaTemplate.send(INGESTION_TOPIC, vehicleId.toString(), jsonMessage);
     }
 }

@@ -10,6 +10,6 @@ public class TopicConfiguration {
 
     @Bean
     public NewTopic topic(){
-        return TopicBuilder.name("ingestion-topic").partitions(1).replicas(1).build();
+        return TopicBuilder.name("gps-ingestion").partitions(1).replicas(1).build();
     }
 }
